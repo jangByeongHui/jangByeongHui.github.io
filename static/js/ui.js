@@ -149,6 +149,97 @@ const RENDERERS = {
   play: renderPlay,
 };
 
+const FINALE_OVERLAY_ID = 'finale-overlay';
+const FINALE_HEADING_ID = 'finale-heading';
+const FINALE_SPARK_COUNT = 6;
+
+/**
+ * Builds the decorative sparkle flourish inside the finale overlay. Purely
+ * cosmetic (no content data) - the CSS `@media (prefers-reduced-motion:
+ * reduce)` rule in `game.css` hides these elements entirely, so reduced-motion
+ * users see the static finale card immediately with no animation.
+ */
+function renderFinaleFlourish(container) {
+  const flourish = document.createElement('div');
+  flourish.className = 'finale-flourish';
+  flourish.setAttribute('aria-hidden', 'true');
+
+  for (let i = 0; i < FINALE_SPARK_COUNT; i += 1) {
+    const spark = document.createElement('span');
+    spark.className = 'finale-spark';
+    spark.style.setProperty('--finale-spark-left', `${8 + i * (84 / (FINALE_SPARK_COUNT - 1))}%`);
+    spark.style.setProperty('--finale-spark-delay', `${i * 0.08}s`);
+    spark.textContent = i % 2 === 0 ? '✨' : '🎉';
+    flourish.appendChild(spark);
+  }
+
+  container.appendChild(flourish);
+}
+
+/**
+ * Renders the completion finale overlay from `content.play`'s finale fields
+ * (`finaleTitle`/`finaleMessage`/`ctaLabel`/`ctaUrl`) - distinct from the
+ * standalone `play` info-panel body, which uses `title`/`description` only.
+ *
+ * Defensively guards against duplicate DOM nodes: if a finale overlay already
+ * exists (by id), this is a no-op, even though `initUI`'s own
+ * `completeDispatched` guard should already prevent `data-orbit:complete`
+ * from firing more than once per session.
+ */
+function renderFinale(content) {
+  if (document.getElementById(FINALE_OVERLAY_ID)) {
+    return;
+  }
+
+  const playData = content && content.play;
+  if (!playData) {
+    console.warn('[ui] Missing content.play data for finale overlay.');
+    return;
+  }
+
+  const overlay = document.createElement('div');
+  overlay.id = FINALE_OVERLAY_ID;
+  overlay.className = 'finale-overlay';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-live', 'polite');
+  overlay.setAttribute('aria-labelledby', FINALE_HEADING_ID);
+  overlay.setAttribute('tabindex', '-1');
+
+  renderFinaleFlourish(overlay);
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'close';
+  closeButton.setAttribute('aria-label', '닫기');
+  closeButton.textContent = '×';
+  closeButton.addEventListener('click', () => {
+    overlay.classList.add('hidden');
+  });
+  overlay.appendChild(closeButton);
+
+  const heading = document.createElement('h2');
+  heading.id = FINALE_HEADING_ID;
+  heading.className = 'finale-title';
+  heading.textContent = playData.finaleTitle;
+  overlay.appendChild(heading);
+
+  const message = document.createElement('p');
+  message.className = 'finale-message';
+  message.textContent = playData.finaleMessage;
+  overlay.appendChild(message);
+
+  const cta = document.createElement('a');
+  cta.className = 'finale-cta';
+  cta.href = playData.ctaUrl;
+  cta.target = '_blank';
+  cta.rel = 'noopener';
+  cta.textContent = playData.ctaLabel;
+  overlay.appendChild(cta);
+
+  document.body.appendChild(overlay);
+  overlay.focus();
+}
+
 /**
  * Clears `#info-panel .info-body` and rebuilds it: an `<h2 id="info-panel-heading">`
  * first, followed by the per-id body produced by `RENDERERS[id]`.
@@ -230,7 +321,12 @@ export function initUI({ content }) {
     }
   }
 
+  function handleComplete() {
+    renderFinale(content);
+  }
+
   window.addEventListener('data-orbit:node-select', handleNodeSelect);
+  window.addEventListener('data-orbit:complete', handleComplete);
 
   if (closeButton) {
     closeButton.addEventListener('click', closePanel);

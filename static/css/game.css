@@ -70,3 +70,92 @@ html, body {
   justify-content: center;
   background: #EAF6FF;
 }
+
+.finale-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  max-width: 420px;
+  width: calc(100% - 48px);
+  max-height: calc(100% - 96px);
+  overflow: hidden;
+  background: linear-gradient(160deg, #FFE8A3 0%, #E3D1FF 100%);
+  border-radius: 20px;
+  padding: 32px 24px 24px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  text-align: center;
+}
+
+.finale-overlay .close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+
+.finale-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin: 8px 0 12px;
+}
+
+.finale-message {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.finale-cta {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: #1A1A1A;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.finale-flourish {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.finale-spark {
+  position: absolute;
+  left: var(--finale-spark-left, 50%);
+  top: -12%;
+  font-size: 1.25rem;
+  opacity: 0;
+  animation: finale-sparkle 1.2s ease-out forwards;
+  animation-delay: var(--finale-spark-delay, 0s);
+}
+
+@keyframes finale-sparkle {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(340%) scale(1.1) rotate(140deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .finale-spark {
+    display: none;
+  }
+}
