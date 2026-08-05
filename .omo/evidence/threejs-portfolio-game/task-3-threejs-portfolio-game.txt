@@ -1,0 +1,26 @@
+# Todo 3 QA Evidence — network requests / 404 check
+
+## Command
+Playwright browser_navigate -> http://localhost:4173/
+Playwright browser_console_messages(level=error)  => 0 errors (after adding <link rel="icon" href="data:,"> to suppress default favicon 404)
+
+## browser_network_requests(static=true) on page load
+1. [GET] http://localhost:4173/ => [200] OK
+2. [GET] https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Space+Grotesk:wght@400;500;700&display=swap => [200]
+3. [GET] https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css => [200] OK
+4. [GET] http://localhost:4173/static/css/game.css => [304] Not Modified (cached, originally 200)
+5. [GET] http://localhost:4173/static/js/main.js => [304] Not Modified (cached, originally 200)
+
+## Import map URL resolution check
+Since static/js/main.js is a temporary stub (console.log only, per plan spec) that does not
+yet `import` from 'three', the import-map-resolved URLs are not fetched during normal page
+load. To directly verify both import map targets resolve (no broken CDN link), fetched them
+via browser_evaluate fetch() from the page context:
+
+[
+  { "url": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js", "status": 200 },
+  { "url": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/controls/OrbitControls.js", "status": 200 }
+]
+
+Result: game.css (200), main.js (200), and both import-map base URLs (three@0.185.1 build +
+examples/jsm/ prefix) all resolve with HTTP 200. No 404s anywhere.

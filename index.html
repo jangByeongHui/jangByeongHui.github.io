@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>장병희 | DATA ORBIT — 3D 인터랙티브 포트폴리오</title>
+  <meta name="description" content="장병희의 이야기를 5개의 노드로 탐험하는 3D 인터랙티브 포트폴리오 게임, DATA ORBIT." />
+  <meta property="og:title" content="장병희 | DATA ORBIT — 3D 인터랙티브 포트폴리오" />
+  <meta property="og:description" content="장병희의 이야기를 5개의 노드로 탐험하는 3D 인터랙티브 포트폴리오 게임, DATA ORBIT." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:," />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+
+  <link rel="stylesheet" href="./static/css/game.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+
+  <div id="hud"></div>
+
+  <div id="info-panel" class="hidden" role="dialog" aria-live="polite" aria-labelledby="info-panel-heading">
+    <button class="close" aria-label="닫기">×</button>
+    <div class="info-body"></div>
+  </div>
+
+  <div id="fallback" class="hidden"></div>
+
+  <noscript>
+    <h1>장병희 — DATA ORBIT</h1>
+    <section>
+      <h2>About</h2>
+      <p>심심함을 프로젝트로 바꾸는 사람, 장병희</p>
+      <p>모토: 날 죽이지 못한 고통은 날 강하게 만들 뿐이다</p>
+      <p>취미: 영화 보기</p>
+    </section>
+    <section>
+      <h2>Career</h2>
+      <p>Data Engineer @ KIA</p>
+      <p>OpenCV 기반 주차장 관제 및 보행자 측위 시스템 개발</p>
+    </section>
+    <section>
+      <h2>Tech Stack</h2>
+      <ul>
+        <li>Data Engineering: Python, Apache Spark, Apache Airflow, Apache Kafka, Hadoop</li>
+        <li>Backend &amp; Frontend: Java, Spring Boot, TypeScript, React</li>
+        <li>Infra &amp; Monitoring: Grafana, Docker</li>
+      </ul>
+    </section>
+    <section>
+      <h2>OSS</h2>
+      <ul>
+        <li>code-yeongyu/oh-my-openagent #4176 — fix(skill-mcp-manager): trust explicit skill MCP env vars</li>
+        <li>apache/airflow #67225 — Fix DockerOperator on_kill to respect auto_remove='force'</li>
+        <li>danny-avila/LibreChat #13154 — fix: Honor OPENID_REUSE_TOKENS in Admin OAuth Exchange</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Play</h2>
+      <p>여기까지 다 눌러보셨다니... 진짜 궁금한 게 많으신 분이거나, 그냥 저처럼 "일단 해보고 보는" 스타일이시겠네요. 실제 이야기는 여기서 이어집니다 👇</p>
+      <p><a href="https://github.com/jangByeongHui">GitHub에서 만나기</a></p>
+    </section>
+  </noscript>
+
+  <script type="module" src="./static/js/main.js"></script>
+</body>
+</html>
