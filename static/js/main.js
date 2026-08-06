@@ -116,7 +116,9 @@ function renderFallbackSummary(container, content) {
  */
 function boot() {
   const canvas = document.getElementById('scene');
-  const sceneResult = initScene(canvas);
+  // Device-tier decided ONCE here at boot - never recomputed on resize.
+  const lowTier = navigator.maxTouchPoints > 0 || window.innerWidth < 768;
+  const sceneResult = initScene(canvas, lowTier);
 
   if (!sceneResult.isWebGLAvailable) {
     const fallback = document.getElementById('fallback');
@@ -131,7 +133,7 @@ function boot() {
 
   const { scene, camera, renderer, controls, isReducedMotion } = sceneResult;
 
-  const nodes = createNodes(scene, THEME, CONTENT);
+  const nodes = createNodes(scene, THEME, CONTENT, lowTier);
   const interactions = initInteractions({ scene, camera, renderer, controls, nodes, isReducedMotion });
   initUI({ content: CONTENT });
 

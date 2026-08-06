@@ -101,9 +101,12 @@ function createMeshNode(id, geometry, color) {
  * @param {THREE.Scene} scene
  * @param {object} THEME
  * @param {object} CONTENT
+ * @param {boolean} [lowTier=false] - device-tier flag computed ONCE at boot
+ *   by main.js. Halves the techStack/play geometry segment counts; desktop
+ *   mouse users (lowTier=false) always get the full-detail geometry.
  * @returns {THREE.Object3D[]} the 5 node objects, each tagged `.userData.id`
  */
-export function createNodes(scene, THEME, CONTENT) {
+export function createNodes(scene, THEME, CONTENT, lowTier = false) {
   const nodes = NODE_ORDER.map((id) => {
     switch (id) {
       case 'about':
@@ -113,13 +116,17 @@ export function createNodes(scene, THEME, CONTENT) {
       case 'techStack':
         return createMeshNode(
           'techStack',
-          new THREE.TorusKnotGeometry(0.8, 0.25, 100, 16),
+          new THREE.TorusKnotGeometry(0.8, 0.25, lowTier ? 50 : 100, lowTier ? 8 : 16),
           THEME.nodeColors.techStack
         );
       case 'oss':
         return createMeshNode('oss', new THREE.OctahedronGeometry(1, 0), THEME.nodeColors.oss);
       case 'play':
-        return createMeshNode('play', new THREE.TorusGeometry(0.9, 0.3, 16, 48), THEME.nodeColors.play);
+        return createMeshNode(
+          'play',
+          new THREE.TorusGeometry(0.9, 0.3, lowTier ? 8 : 16, lowTier ? 24 : 48),
+          THEME.nodeColors.play
+        );
       default:
         throw new Error(`Unknown node id: ${id}`);
     }

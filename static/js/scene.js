@@ -34,9 +34,13 @@ function createBackgroundTexture(aspect) {
  * (owned exclusively by main.js).
  *
  * @param {HTMLCanvasElement} canvas
+ * @param {boolean} [lowTier=false] - device-tier flag computed ONCE at boot
+ *   by main.js (`navigator.maxTouchPoints > 0 || window.innerWidth < 768`).
+ *   When true, autoRotate is disabled so it doesn't fight the user's own
+ *   touch-drag orbiting. Does NOT change on later resizes.
  * @returns {{scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer, controls: OrbitControls, isReducedMotion: boolean, isWebGLAvailable: true} | {isWebGLAvailable: false}}
  */
-export function initScene(canvas) {
+export function initScene(canvas, lowTier = false) {
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -69,8 +73,18 @@ export function initScene(canvas) {
   controls.maxDistance = 24;
   controls.maxPolarAngle = Math.PI * 0.49;
 
+  // Explicit touch mapping (matches the library default, but must be
+  // explicit rather than implicit): one-finger drag rotates, two-finger
+  // pinch/drag dollies + pans. Pinch-to-zoom must always remain enabled.
+  controls.touches = {
+    ONE: THREE.TOUCH.ROTATE,
+    TWO: THREE.TOUCH.DOLLY_PAN,
+  };
+
   const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  controls.autoRotate = !isReducedMotion;
+  // Low-tier (touch/small-viewport) devices get autoRotate disabled so it
+  // doesn't fight the user's own touch-drag orbiting.
+  controls.autoRotate = !isReducedMotion && !lowTier;
   controls.autoRotateSpeed = 0.4;
 
   const ambientLight = new THREE.AmbientLight(THEME.ambientLightColor, THEME.ambientLightIntensity);
