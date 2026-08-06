@@ -341,6 +341,7 @@ export function initUI({ content }) {
   }
 
   function handleComplete() {
+    closePanel();
     renderFinale(content);
   }
 
