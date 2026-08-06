@@ -155,8 +155,15 @@ function boot() {
     // and scene.js's own resize listener (registered earlier, inside
     // `initScene`) updates aspect/background before ours (registered after)
     // schedules the repaint.
+    // The `about` node is a real 3D Group now (not an auto-billboarding Sprite pair,
+    // see nodes.js's `createAboutNode`), so it needs an explicit one-time `lookAt` here
+    // to face the camera on first paint/resize/node-select - the continuous render loop
+    // below re-runs `lookAt` every frame instead, but that loop never runs under reduced
+    // motion, so this is the only place that keeps the photo card readable in that mode.
+    const aboutNode = nodes.find((node) => node.userData.id === 'about');
     const scheduleReducedMotionRender = () => {
       requestAnimationFrame(() => {
+        if (aboutNode) aboutNode.lookAt(camera.position);
         renderer.render(scene, camera);
       });
     };
@@ -179,6 +186,9 @@ function boot() {
       if (node.userData.id !== 'about') {
         node.rotation.y += deltaTime * 0.0004;
         node.rotation.x += deltaTime * 0.00015;
+      } else {
+        // No longer an auto-billboarding Sprite pair - face the camera manually every frame.
+        node.lookAt(camera.position);
       }
     });
     renderer.render(scene, camera);

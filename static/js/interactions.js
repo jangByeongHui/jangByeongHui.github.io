@@ -13,23 +13,29 @@ const FLY_TO_OFFSET = new THREE.Vector3(0, 2, 8);
 const NODE_CENTER_PICK_RADIUS_NDC = 0.15;
 
 /**
- * Resolves which object a hover/click highlight should actually be applied to, and how,
- * based on the hit object's material type:
- * - `THREE.MeshStandardMaterial` (career/techStack/oss/play): highlight the mesh itself
- *   (`type: 'mesh'`), supports both scale and emissive.
- * - `THREE.SpriteMaterial` (about's two child sprites): `SpriteMaterial` has no `emissive`
- *   property, so the highlight target is the sprite's parent `THREE.Group` instead
- *   (`type: 'sprite'`), scaled as a whole to keep both sprites in sync; no emissive call.
+ * Resolves which object a hover/click highlight should actually be applied to, and how:
+ * - `about` (a composite Group of two Meshes - a photo-card backing and a photo plane,
+ *   see `createAboutNode` in nodes.js): identified by `hitObject.userData.id === 'about'`
+ *   checked BEFORE any material-type check, so it takes priority regardless of which of
+ *   the two child meshes the raycaster actually hit. The highlight target is the whole
+ *   parent `THREE.Group` (`type: 'group'`), scaled together so the card lifts as one
+ *   unit - matching the old two-Sprite Group's behavior exactly. Neither child mesh's
+ *   material carries `emissive`-flash styling for this case (`applyHighlight` only
+ *   flashes emissive for `type === 'mesh'`).
+ * - `THREE.MeshStandardMaterial` (career/techStack/oss/play, including
+ *   `MeshPhysicalMaterial` parts, which still set `isMeshStandardMaterial = true`):
+ *   highlight the specific leaf mesh that was hit (`type: 'mesh'`), supports both scale
+ *   and emissive.
  *
  * @param {THREE.Object3D} hitObject
- * @returns {{ target: THREE.Object3D, type: 'mesh' | 'sprite' } | null}
+ * @returns {{ target: THREE.Object3D, type: 'mesh' | 'group' } | null}
  */
 function resolveHighlightTarget(hitObject) {
+  if (hitObject.userData && hitObject.userData.id === 'about') {
+    return { target: hitObject.parent, type: 'group' };
+  }
   const material = hitObject.material;
   if (!material) return null;
-  if (material.isSpriteMaterial) {
-    return { target: hitObject.parent, type: 'sprite' };
-  }
   if (material.isMeshStandardMaterial) {
     return { target: hitObject, type: 'mesh' };
   }
