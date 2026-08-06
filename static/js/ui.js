@@ -149,6 +149,20 @@ const RENDERERS = {
   play: renderPlay,
 };
 
+/** Class prefix used to tag `#info-panel` with the currently selected node id,
+ * so `game.css` can render a per-id top accent strip (`.info-panel--about`, etc).
+ * Purely presentational - carries no behavior. */
+const INFO_PANEL_ID_CLASS_PREFIX = 'info-panel--';
+
+/** Removes any previously-applied `info-panel--*` id class from `#info-panel`,
+ * so a stale accent color never leaks into the next selection or a closed panel. */
+function clearInfoPanelIdClass(panel) {
+  if (!panel) return;
+  Array.from(panel.classList)
+    .filter((cls) => cls.startsWith(INFO_PANEL_ID_CLASS_PREFIX))
+    .forEach((cls) => panel.classList.remove(cls));
+}
+
 const FINALE_OVERLAY_ID = 'finale-overlay';
 const FINALE_HEADING_ID = 'finale-heading';
 const FINALE_SPARK_COUNT = 6;
@@ -291,6 +305,7 @@ export function initUI({ content }) {
   function closePanel() {
     if (!infoPanel) return;
     infoPanel.classList.add('hidden');
+    clearInfoPanelIdClass(infoPanel);
   }
 
   function handleNodeSelect(event) {
@@ -308,6 +323,10 @@ export function initUI({ content }) {
 
     if (infoBody) {
       renderInfoBody(infoBody, id, data, visited.size, totalNodes);
+    }
+    if (infoPanel) {
+      clearInfoPanelIdClass(infoPanel);
+      infoPanel.classList.add(`${INFO_PANEL_ID_CLASS_PREFIX}${id}`);
     }
     openPanel();
 
