@@ -1,0 +1,76 @@
+Todo 4 — static/js/scene.js — QA Evidence
+==========================================
+
+HAPPY PATH
+----------
+Harness (per plan line 83 QA harness note): dynamic import of ./static/js/scene.js
+in page context, against a canvas explicitly sized to window.innerWidth/innerHeight.
+
+1) DPR cap test — forced `Object.defineProperty(window,'devicePixelRatio',{value:4})`
+   before calling initScene(canvas):
+   {
+     "isWebGLAvailable": true,
+     "pixelRatio": 2,
+     "pixelRatioOk": true,
+     "isCanvasTexture": true,
+     "isReducedMotion": false,
+     "cameraPosition": [0, 1.9999999999999993, 14.000000000000002],
+     "cameraAspect": 1.7751479289940828,
+     "controlsDamping": 0.08,
+     "controlsMinDistance": 6,
+     "controlsMaxDistance": 24,
+     "controlsAutoRotate": true,
+     "controlsAutoRotateSpeed": 0.4
+   }
+   PASS: renderer.getPixelRatio() === 2 (<=2) even with devicePixelRatio forced to 4.
+   PASS: scene.background instanceof THREE.CanvasTexture.
+   PASS: camera.position === (0, 2, 14) (float rounding only).
+   PASS: OrbitControls params match plan exactly (dampingFactor 0.08, minDistance 6,
+         maxDistance 24, autoRotate true (since prefers-reduced-motion did not match),
+         autoRotateSpeed 0.4).
+   Screenshot: task-4-threejs-portfolio-game.png — shows a light pastel vertical
+   gradient (pink -> blue -> green, matching THEME.background.top/mid/bottom),
+   NOT black/dark.
+
+2) Resize / aspect test — browser_resize to 900x700, dispatched `resize` event:
+   {
+     "before": 1.2857142857142858,
+     "after": 1.2857142857142858,
+     "expected": 1.2857142857142858,
+     "matches": true,
+     "isCanvasTextureStill": true
+   }
+   PASS: camera.aspect updated to match window.innerWidth/window.innerHeight after
+   resize (Playwright's own viewport resize already dispatches a native `resize`
+   event that our listener responds to live; a manually dispatched `resize` event
+   confirmed the same value, i.e. idempotent).
+   Screenshot: task-4-threejs-portfolio-game-resize.png — gradient remains a clean
+   undistorted vertical band at the new 900x700 viewport (no stretching/skew),
+   proving camera.updateProjectionMatrix() + renderer.setSize() + gradient repaint
+   all ran in the correct order.
+
+FAILURE PATH — forced no-WebGL
+-------------------------------
+Monkey-patched `HTMLCanvasElement.prototype.getContext` to return `null` before
+dynamically importing scene.js and calling `initScene(canvas)`:
+{
+  "result": { "isWebGLAvailable": false },
+  "threw": false,
+  "threwMessage": "",
+  "capturedConsoleErrors": [
+    "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+  ]
+}
+PASS: initScene(canvas) returned exactly `{ isWebGLAvailable: false }` (no other
+keys), with no uncaught exception (threw === false) and the page did not crash.
+NOTE: one `console.error` line was emitted, but it originates from inside
+THREE.WebGLRenderer's own constructor (THREE's internal diagnostic log when WebGL
+context creation fails) — it is expected/benign library logging surfaced while
+our code's try/catch already caught the resulting thrown error and returned the
+graceful fallback object. No uncaught runtime error or page-crashing exception
+occurred; browser_console_messages(level=error) confirms exactly this one
+THREE-internal log line and nothing else (no unhandled promise rejections, no
+TypeErrors from our own scene.js code).
+
+Server: python3 -m http.server 4173 (repo root), Playwright navigated to
+http://localhost:4173/.

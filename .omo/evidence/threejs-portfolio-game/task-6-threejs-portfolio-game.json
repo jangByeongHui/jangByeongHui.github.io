@@ -1,0 +1,37 @@
+{
+  "task": "Todo 6 - interactions.js",
+  "harness": "Playwright MCP browser_evaluate against http://localhost:4173/index.html; dynamically imports scene/theme/content/nodes/interactions modules into a canvas sized to window dimensions.",
+  "happy": {
+    "hover": {
+      "career": { "scale": 1.1, "emissive": 13351297, "cursor": "pointer" },
+      "afterMoveToOss": { "careerScale": 1, "careerEmissive": 0, "ossScale": 1.1, "ossEmissive": 9617829 },
+      "aboutSpriteGroup": { "groupScale": 1.1, "plateSpriteScale": 2.3, "photoSpriteScale": 2 },
+      "afterMoveOffNode": { "aboutGroupScale": 1, "cursor": "default" }
+    },
+    "clickAndFlyTo": {
+      "expectedDistance": 8.246211251235321,
+      "perNode": [
+        { "id": "about", "eventFired": true, "autoRotate": false, "enabledDuringTween": false, "enabledAfterTween": true, "distance": 8.246211251235321, "withinTolerance": true },
+        { "id": "career", "eventFired": true, "autoRotate": false, "enabledDuringTween": false, "enabledAfterTween": true, "distance": 8.246211251235321, "withinTolerance": true },
+        { "id": "techStack", "eventFired": true, "autoRotate": false, "enabledDuringTween": false, "enabledAfterTween": true, "distance": 8.24621125123532, "withinTolerance": true },
+        { "id": "oss", "eventFired": true, "autoRotate": false, "enabledDuringTween": false, "enabledAfterTween": true, "distance": 8.246211251235321, "withinTolerance": true },
+        { "id": "play", "eventFired": true, "autoRotate": false, "enabledDuringTween": false, "enabledAfterTween": true, "distance": 8.246211251235321, "withinTolerance": true }
+      ]
+    }
+  },
+  "failure": {
+    "gesture": "pointerdown at career, pointermove +7px, pointerup",
+    "orbitControlsRotateDisabledOnlyForHarness": true,
+    "eventIds": [],
+    "cameraUnchanged": true,
+    "targetUnchanged": true,
+    "autoRotateBefore": true,
+    "autoRotateAfter": true,
+    "enabledBefore": true,
+    "enabledAfter": true
+  },
+  "notes": [
+    "A missing static/media/profile.jpg produced the known expected resource 404; no JavaScript exception occurred.",
+    "Each node click was tested from a fresh initial-camera harness, avoiding legitimate foreground-node occlusion after a preceding fly-to."
+  ]
+}

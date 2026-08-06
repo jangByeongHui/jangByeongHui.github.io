@@ -1,0 +1,19 @@
+=== Task 1: static/js/content.js — Acceptance & QA Evidence ===
+Date: 2026-08-05T23:09:17Z
+
+--- Acceptance criteria #1: node import-check (CONTENT keys) ---
+$ node --input-type=module -e "import { pathToFileURL } from 'node:url'; const m = await import(pathToFileURL(process.cwd()+'/static/js/content.js').href); const keys = Object.keys(m.CONTENT).sort(); if (JSON.stringify(keys) !== JSON.stringify(['about','career','oss','play','techStack'])) process.exit(1);"
+Exit code: 0
+
+--- Acceptance criteria #2: grep motto string count ---
+$ grep -c "날 죽이지 못한 고통은" static/js/content.js
+1
+Exit code: 0 (expect 1)
+
+--- QA happy path: run acceptance command above via shell (see criteria #1 output, exit 0 = pass) ---
+
+--- QA failure/edge scenario: placeholder text search (empty output = pass) ---
+$ grep -riE "TODO|lorem ipsum|여기에 내용을" static/js/content.js
+Exit code: 1 (grep: 1 = no matches found = PASS)
+
+=== Result: ALL CHECKS PASSED ===

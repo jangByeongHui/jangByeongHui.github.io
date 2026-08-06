@@ -1,0 +1,108 @@
+Todo 11 — Enforce accessibility fallbacks (reduced motion, no-WebGL, no-JS)
+QA run via Playwright MCP (playwright_browser_run_code_unsafe), server: python3 -m http.server 4173, http://localhost:4173/
+
+=== Method ===
+Single combined browser_run_code_unsafe call (per Todo 7/9 learnings: avoid splitting
+state-dependent checks across separate browser_evaluate calls) running 4 isolated
+BrowserContexts against the SAME running page/browser instance:
+  1. reducedMotion context: `browser.newContext({ reducedMotion: 'reduce' })`, with
+     `page.addInitScript` wrapping `window.requestAnimationFrame` to count calls
+     (installed before main.js's module-level boot() executes), navigate, wait 2000ms.
+  2. normalMotion context: identical rAF-counter init script, no reducedMotion emulation,
+     navigate, wait 2000ms.
+  3. info-panel-heading context: navigate, dispatch `data-orbit:node-select` for all 5
+     NODE_ORDER ids in sequence, read `#info-panel-heading`.textContent after each.
+  4. no-JS context: `browser.newContext({ javaScriptEnabled: false })`, navigate, read
+     `document.body.innerText`.
+
+=== Result (raw) ===
+{
+  "reducedMotion": {
+    "rafCount": 1,
+    "debug": { "isWebGLAvailable": true, "isReducedMotion": true },
+    "sceneAriaHidden": "true",
+    "panelRole": "dialog",
+    "panelLabelledby": "info-panel-heading",
+    "consoleErrors": ["Failed to load resource: the server responded with a status of 404 (File not found)"]
+  },
+  "normalMotion": {
+    "rafCount": 244,
+    "debug": { "isWebGLAvailable": true, "isReducedMotion": false },
+    "consoleErrors": ["Failed to load resource: the server responded with a status of 404 (File not found)"]
+  },
+  "infoPanelHeadingPerNode": {
+    "about": "장병희",
+    "career": "Data Engineer @ KIA",
+    "techStack": "Tech Stack",
+    "oss": "OSS",
+    "play": "진행 상황"
+  },
+  "noJs": {
+    "hasAboutTagline": true,
+    "hasCareerTitle": true,
+    "hasTechStackHeading": true,
+    "hasOssHeading": true,
+    "hasPlayFinaleMessage": true,
+    "hasGithubLinkText": true
+  }
+}
+
+=== Plan Acceptance Criteria (plan lines 203-204) ===
+1. HAPPY: prefers-reduced-motion:reduce emulated, rAF instrumented before navigation,
+   observed 2s -> rafCount === 1.  ACTUAL: 1.  PASS.
+2. FAILURE/CONTROL: not emulated, same observation window -> rafCount > 30.
+   ACTUAL: 244.  PASS. (Confirms the check is meaningful: normal motion still runs
+   the continuous render loop; only reduced-motion collapses it to a single frame.)
+
+=== Supplementary verification (Todo 11 "What to do" — aria/noscript survival) ===
+- `#scene` `aria-hidden` attribute value: "true"                    -> PASS (Todo 3 requirement intact)
+- `#info-panel` `role` attribute value: "dialog"                    -> PASS (Todo 3 requirement intact)
+- `#info-panel` `aria-labelledby` attribute value: "info-panel-heading" -> PASS (Todo 3 requirement intact)
+- `#info-panel-heading` renders on EVERY node selection (Todo 7's requirement,
+  re-verified not re-implemented): dispatched all 5 `data-orbit:node-select` events
+  in one session, `document.getElementById('info-panel-heading').textContent` was
+  non-null and correct after each of the 5 dispatches (about/career/techStack/oss/play
+  all resolved a heading). PASS.
+- No-JS path (`javaScriptEnabled: false`, forces `<noscript>` rendering): all 5
+  CONTENT nodes' key text is present in `document.body.innerText`:
+  about.tagline, career.title, techStack heading, oss heading, play.finaleMessage,
+  play.ctaLabel — all found. PASS.
+
+=== <noscript> vs content.js byte-parity check (programmatic, Node ESM) ===
+Command: `node --input-type=module -e '...'` importing `./static/js/content.js` and
+comparing every referenced field's raw string against `index.html`'s `<noscript>` block
+via `.includes()`.
+Result: every check passed EXCEPT two false-positive "FAIL" lines for the literal
+substring "&" in `Backend & Frontend` / `Infra & Monitoring` group labels — the
+`<noscript>` block correctly HTML-entity-encodes these as `Backend &amp; Frontend` /
+`Infra &amp; Monitoring` inside a `<li>`, which is correct, valid HTML (the raw "&"
+substring check is a false negative of the naive comparison script, not real drift).
+Re-checked with `.includes("Backend &amp; Frontend")` / `.includes("Infra &amp; Monitoring")`
+-> both `true`. CONFIRMED: no <noscript> drift. index.html's <noscript> block already
+matches content.js's final copy exactly for all 5 nodes (About tagline/motto/hobby,
+Career title/highlight, Tech Stack 3 groups/12 items, OSS 3 PR repo+number+title,
+Play finale message + CTA label/URL). NO EDIT WAS NEEDED.
+
+=== Console errors observed ===
+Only the single documented benign `static/media/profile.jpg` 404 (missing user-supplied
+asset, established as expected/benign since Todo 5's learnings — has a working
+onError/fallback path, not an uncaught exception). Zero unrelated console errors in
+either the reduced-motion or normal-motion run.
+
+=== Conclusion ===
+Both plan Acceptance Criteria (line 203) PASS. All three Todo 11 "What to do" verification
+targets (reduced-motion -> exactly 1 rAF; aria-hidden/role/aria-labelledby survival;
+<noscript> content parity) hold with ZERO drift found. No manual accessibility toggle
+exists anywhere in the codebase (grep-confirmed: `initScene`/`main.js` compute
+`isReducedMotion` solely from the OS/browser-level `prefers-reduced-motion` media query,
+with no UI control to override it). No code changes were required to `main.js`,
+`scene.js`, or `index.html` for this todo — this was purely a verification pass.
+
+NOTE: at QA time, `static/js/main.js`, `static/js/scene.js`, and `static/js/nodes.js`
+had uncommitted, in-progress changes from the parallel Todo 10 (mobile touch parity /
+device-tier geometry). None of those changes affect this todo's reduced-motion or
+aria/noscript behavior (verified: `isReducedMotion` plumbing and the aria/noscript
+markup are untouched by Todo 10's diff). To avoid entangling this todo's commit with
+Todo 10's unrelated in-flight work, no file edits were made and the required commit
+was recorded as an empty commit (`git commit --allow-empty`) documenting that the
+verification passed with zero code changes needed.

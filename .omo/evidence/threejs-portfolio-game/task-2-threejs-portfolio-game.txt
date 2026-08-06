@@ -1,0 +1,12 @@
+=== Command 1: grep -c color-values ===
+$ grep -c "FDEFF9\|EAF6FF\|E9FBEF\|FFC1CC\|FFE8A3\|AEE2FF\|B8F2D0\|E3D1FF\|D8D3E8" static/js/theme.js
+9
+exit code: 0
+
+=== Command 2: node ESM import + THEME type check ===
+$ node --input-type=module -e "import { pathToFileURL } from 'node:url'; const m = await import(pathToFileURL(process.cwd()+'/static/js/theme.js').href); process.exit(typeof m.THEME === 'object' ? 0 : 1);"
+exit code: 0
+
+=== QA failure scenario: dark/neon leftover check (expect empty output) ===
+$ grep -iE "#000|#111|#0f0f|neon" static/js/theme.js
+(grep exit code, 1 = no match = PASS): 1

@@ -1,0 +1,68 @@
+Todo 10 — Mobile/touch parity + device-tier quality scaling — QA evidence
+=========================================================================
+Local server: python3 -m http.server 4173 (http://localhost:4173/)
+Tool: Playwright MCP (browser_navigate / browser_run_code_unsafe / browser_evaluate / browser_console_messages)
+
+SCENARIO A — Desktop / non-touch, viewport 1440x900, navigator.maxTouchPoints=0
+--------------------------------------------------------------------------------
+window.__DATA_ORBIT_DEBUG__.nodes geometry.parameters (unchanged from Todo 5):
+  techStack: TorusKnotGeometry -> tubularSegments=100, radialSegments=16
+  play:      TorusGeometry     -> radialSegments=16,  tubularSegments=48
+initScene(canvas, false).controls:
+  autoRotateDesktop = true
+  touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }  (touchesMatchDesktop = true)
+Result: PASS — desktop geometry and autoRotate behavior identical to pre-Todo-10 baseline.
+
+SCENARIO B — Mobile/touch, viewport 375x812, navigator.maxTouchPoints=5 (happy path)
+--------------------------------------------------------------------------------------
+Boot-time lowTier = navigator.maxTouchPoints > 0 || window.innerWidth < 768 => true
+
+window.__DATA_ORBIT_DEBUG__.nodes geometry.parameters (halved per plan):
+  techStack: TorusKnotGeometry -> tubularSegments=50, radialSegments=8   (acceptance criteria: tubularSegments===50 -> PASS)
+  play:      TorusGeometry     -> radialSegments=8,   tubularSegments=24
+maxTouchPoints observed on page: 5
+
+initScene(canvas, true).controls (isolated re-init, same params as boot):
+  autoRotateLowTier = false   (autoRotate disabled on low tier, PASS)
+  touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }  (touchesMatchLow = true, pinch-to-zoom preserved)
+
+Real touch drag-orbit (one-finger, CDP Input.dispatchTouchEvent, +150px horizontal over 15 steps):
+  camera.position before: { x: 0,       y: 2.0000, z: 14.0000 }
+  camera.position after:  { x: -12.837, y: 2.0000, z: 5.5867 }
+  changed = true  -> PASS (ONE: ROTATE orbits the camera around the target)
+
+Real two-finger pinch-equivalent (CDP Input.dispatchTouchEvent, two touch points converging from 120px apart to ~0px over 15 steps):
+  camera distance-from-origin before: 14.1421
+  camera distance-from-origin after:  24.0000 (hit controls.maxDistance cap)
+  changed = true -> PASS (TWO: DOLLY_PAN still dollies/zooms; pinch-to-zoom NOT disabled)
+
+Screenshot: task-10-threejs-portfolio-game.png (state after both touch gestures, 375x812 viewport)
+
+SCENARIO C — Failure/regression check: resize mid-session must NOT change the tier
+------------------------------------------------------------------------------------
+Starting from Scenario B's booted (lowTier=true) session, resized viewport to 1440x900 and
+dispatched a synthetic `resize` event (same handler scene.js's own resize listener uses).
+
+window.__DATA_ORBIT_DEBUG__.nodes geometry.parameters AFTER resize:
+  techStack: tubularSegments=50, radialSegments=8   (still the low-tier boot value, NOT retroactively 100/16)
+  play:      radialSegments=8,  tubularSegments=24  (still the low-tier boot value, NOT retroactively 16/48)
+Result: PASS — tier is decided once at boot and does not change on later resize, per plan requirement.
+
+CONSOLE ERROR CHECK (across all scenarios above, single continuous session)
+------------------------------------------------------------------------------
+browser_console_messages(level=error) total: 1
+  [ERROR] Failed to load resource: the server responded with a status of 404 (File not found)
+          @ http://localhost:4173/static/media/profile.jpg:0
+This is the SAME pre-existing, documented, expected 404 from Todo 5/7/8/9 learnings
+(static/media/profile.jpg is a user-supplied asset not yet present; the app's onError
+fallback to profile-placeholder.svg handles it functionally). No other console errors
+were observed during boot, drag-orbit, pinch-dolly, or the mid-session resize.
+
+SUMMARY OF ACCEPTANCE CRITERIA (plan lines 194-195)
+------------------------------------------------------
+[PASS] maxTouchPoints=5, viewport 375x812 -> techStack tubularSegments === 50 (not radialSegments=8)
+[PASS] maxTouchPoints=0, viewport 1440x900 -> techStack tubularSegments === 100 (Todo-5 desktop default)
+[PASS] happy path: resize to 375x812 + maxTouchPoints override + real drag-orbit (camera position changed)
+                    + real two-finger pinch-equivalent (camera distance changed) via dispatched touch events
+[PASS] failure path: resize back to 1440x900 mid-session does NOT retroactively change the geometry tier
+                      (still 50/8/8/24 from boot, confirmed via console/evaluate dump above)

@@ -1,0 +1,129 @@
+{
+  "reduced_motion_webgl_available": true,
+  "raf_calls_after_load_1.2s": 1,
+  "click_target_projection": {
+    "x": 1003.9348925905094,
+    "y": 400,
+    "ndc": [
+      0.5686482696726708,
+      -1.010122243046167e-16
+    ]
+  },
+  "raf_calls_after_click": 2,
+  "render_log_after_click": [
+    {
+      "pos": [
+        6,
+        2,
+        8
+      ],
+      "aspect": 1.6
+    }
+  ],
+  "raf_calls_idle_after_click_1.2s": 2,
+  "raf_calls_after_resize": 3,
+  "render_log_after_resize": [
+    {
+      "pos": [
+        6,
+        2,
+        8
+      ],
+      "aspect": 1.6
+    },
+    {
+      "pos": [
+        6,
+        2,
+        8
+      ],
+      "aspect": 1.2857142857142858
+    }
+  ],
+  "raf_calls_idle_after_resize_1.2s": 3,
+  "reduced_motion_console_errors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)",
+    "Failed to load resource: the server responded with a status of 404 (File not found)"
+  ],
+  "normal_motion_webgl_available": true,
+  "normal_motion_isReducedMotion_flag": false,
+  "normal_motion_raf_at_t": 107,
+  "normal_motion_raf_at_t+500ms": 165,
+  "normal_motion_playthrough": [
+    {
+      "node": "about",
+      "click_info": {
+        "x": 984.6890379502463,
+        "y": 394.30811318072256,
+        "ndcX": 0.53857662179726,
+        "ndcY": 0.01422971704819364,
+        "inView": true
+      },
+      "clicked": true,
+      "heading_after": "장병희"
+    },
+    {
+      "node": "career",
+      "click_info": {
+        "x": 1538.5684780577526,
+        "y": 1372.0276013709968,
+        "ndcX": 1.4040132469652384,
+        "ndcY": -2.430069003427492,
+        "inView": false
+      },
+      "clicked": false,
+      "heading_after": null
+    },
+    {
+      "node": "techStack",
+      "click_info": {
+        "x": 2253.949585836979,
+        "y": 1178.4977023056422,
+        "ndcX": 2.5217962278702797,
+        "ndcY": -1.9462442557641055,
+        "inView": false
+      },
+      "clicked": false,
+      "heading_after": null
+    },
+    {
+      "node": "oss",
+      "click_info": {
+        "x": 1817.6887641603212,
+        "y": 361.09196802107255,
+        "ndcX": 1.840138694000502,
+        "ndcY": 0.09727007994731864,
+        "inView": false
+      },
+      "clicked": false,
+      "heading_after": null
+    },
+    {
+      "node": "play",
+      "click_info": {
+        "x": 1250.9687276158922,
+        "y": -6.285726469442476,
+        "ndcX": 0.9546386368998315,
+        "ndcY": 1.0157143161736062,
+        "inView": false
+      },
+      "clicked": false,
+      "heading_after": null
+    }
+  ],
+  "normal_motion_hud_final": "1 / 5 explored",
+  "normal_motion_finale_present": false,
+  "normal_motion_console_errors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)",
+    "Failed to load resource: the server responded with a status of 404 (File not found)"
+  ],
+  "nowebgl_debug_shape": {
+    "isWebGLAvailable": false
+  },
+  "nowebgl_scene_hidden": true,
+  "nowebgl_fallback_visible": true,
+  "nowebgl_fallback_section_count": 5,
+  "nowebgl_console_errors": [
+    "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+  ]
+}

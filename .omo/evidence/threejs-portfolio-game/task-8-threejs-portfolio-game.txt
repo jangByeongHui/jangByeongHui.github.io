@@ -1,0 +1,20 @@
+Task 8 — console dump (level=error) after full 5-node playthrough + finale render + close + duplicate-dispatch guard test
+
+Total messages: 2 (Errors: 1, Warnings: 0)
+[ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:4173/static/media/profile.jpg:0
+
+-- This is the pre-existing, documented, benign 404 for the not-yet-supplied
+-- real profile photo asset (see Todo 5 + Todo 7 learnings). No other console
+-- errors were produced during this todo's implementation or QA.
+
+node --check static/js/ui.js -> exit 0 (JS OK)
+
+Duplicate-guard failure scenario raw result (browser_evaluate):
+{
+  "finaleOverlayCount": 1,
+  "overlayHiddenStillAfterDuplicate": true
+}
+
+Real-click CTA verification (browser_tabs list after browser_click on a.finale-cta):
+0: (current) [DATA ORBIT page] http://localhost:4173/
+1: [jangByeongHui (장병희) · GitHub] https://github.com/jangByeongHui

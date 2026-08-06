@@ -1,0 +1,85 @@
+Todo 5 QA evidence — static/js/nodes.js
+=========================================
+
+HAPPY PATH
+----------
+Harness: Playwright browser_evaluate, dynamic import() of scene.js + theme.js + content.js + nodes.js
+against a page-context <canvas> sized to window.innerWidth/innerHeight (per plan line 83 QA harness note),
+initScene(canvas) then createNodes(result.scene, THEME, CONTENT), one render() call, results on window.__QA__.
+
+Result (raw JSON returned from browser_evaluate):
+{
+  "idsMatch": true,
+  "ids": ["about","career","oss","play","techStack"],
+  "expected": ["about","career","oss","play","techStack"],
+  "aboutIsGroup": true,
+  "aboutGroupUserData": { "id": "about" },
+  "plateSpriteType": "Sprite",
+  "plateSpriteUserData": { "id": "about" },
+  "plateSpriteColorHex": "FFC1CC",
+  "photoSpriteType": "Sprite",
+  "photoSpriteUserData": { "id": "about" },
+  "photoSpriteMapNonNull": true,
+  "colorChecks": {
+    "career":    { "hex": "FFE8A3", "expected": "FFE8A3", "match": true },
+    "techStack": { "hex": "AEE2FF", "expected": "AEE2FF", "match": true },
+    "oss":       { "hex": "B8F2D0", "expected": "B8F2D0", "match": true },
+    "play":      { "hex": "E3D1FF", "expected": "E3D1FF", "match": true }
+  },
+  "positions": [
+    { "id": "about",     "x": 6,                    "y": 0, "z": 0 },
+    { "id": "career",    "x": 1.8541019662496847,   "y": 0, "z": 5.706339097770921 },
+    { "id": "techStack", "x": -4.854101966249684,   "y": 0, "z": 3.5267115137548393 },
+    { "id": "oss",       "x": -4.854101966249686,   "y": 0, "z": -3.5267115137548384 },
+    { "id": "play",      "x": 1.8541019662496834,   "y": 0, "z": -5.706339097770922 }
+  ]
+}
+
+Acceptance criteria check:
+- window.__QA__.nodes.map(n=>n.userData.id).sort() === ['about','career','oss','play','techStack'] -> PASS (idsMatch: true)
+- career/techStack/oss/play material.color.getHexString() (uppercased) matches THEME.nodeColors.* (minus '#') -> PASS (all match:true)
+- about (THREE.Group) FIRST child (backing-plate Sprite) material.color.getHexString() matches THEME.nodeColors.about ('FFC1CC') -> PASS
+- about SECOND child (photo Sprite) has non-null material.map -> PASS (photoSpriteMapNonNull: true)
+- Positions match layout formula x=6*cos(i*2*PI/5), z=6*sin(i*2*PI/5), y=0 for i=0..4 in NODE_ORDER order -> PASS (verified numerically above)
+- Both the about Group AND its two child Sprites individually carry userData={id:'about'} (critical for Todo 6 raycasting leaf-hit) -> PASS
+
+Screenshot: task-5-threejs-portfolio-game.png shows 5 distinctly shaped/colored pastel objects arranged
+in a circle with hub-and-spoke connecting lines to the origin, rendered against the pastel gradient background.
+
+Console during happy-path run: 1 error logged —
+  "Failed to load resource: the server responded with a status of 404 (File not found) @ .../static/media/profile.jpg:0"
+This is EXPECTED and not a bug: CONTENT.about.photo points at static/media/profile.jpg, which is a
+user-supplied asset never created by any todo (per learnings.md Todo-3 entry — only profile-placeholder.svg
+is created). The 404 correctly triggers the TextureLoader onError callback, which falls back to
+photoFallback (profile-placeholder.svg) via a second `new THREE.TextureLoader()` call — exactly the
+fallback path exercised again, explicitly, in the FAILURE scenario below. No uncaught JS exceptions
+were raised; the resource-load 404 is a network log, not an uncaught runtime error.
+
+
+FAILURE PATH (forced 404 photo URL)
+------------------------------------
+Harness: same as above, but CONTENT.about.photo was explicitly overridden to a guaranteed-404 path
+('./static/media/DOES-NOT-EXIST-404.jpg') before calling createNodes(), to force the TextureLoader
+onError callback deterministically (independent of whether static/media/profile.jpg happens to exist).
+
+Result (raw JSON returned from browser_evaluate):
+{
+  "aboutNodeExists": true,
+  "aboutIsGroup": true,
+  "photoSpriteMapNonNullAfterFallback": true,
+  "photoSpriteMapIsTexture": true,
+  "sceneChildCountUnchanged": false,
+  "nodesArrayLength": 5,
+  "noThrowDuringCreateNodes": true
+}
+
+Console errors captured during failure-path run (browser_console_messages level=error):
+  [1] "Failed to load resource: the server responded with a status of 404 (File not found) @ .../static/media/DOES-NOT-EXIST-404.jpg:0"
+  (this is the forced 404 resource-load network log, expected and intentional)
+  Zero uncaught JavaScript errors/exceptions were present — createNodes() completed synchronously without
+  throwing, all 5 nodes were created and added to the scene, and the About node's photo sprite ended up with
+  a valid (non-null) material.map pointing at the fallback texture (profile-placeholder.svg) once the
+  async onError callback fired. Scene setup was never blocked by the failed photo load.
+
+Conclusion: PASS — About node still renders (placeholder texture applied via fallback), zero uncaught
+console errors, `new THREE.TextureLoader()` used (WITH `new`) for both primary and fallback loads.

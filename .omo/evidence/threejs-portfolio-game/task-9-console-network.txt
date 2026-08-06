@@ -1,0 +1,109 @@
+Todo 9 — main.js integration — happy-path console/network dump
+================================================================
+
+Environment: python3 -m http.server 4173, Chromium via Playwright MCP,
+prefers-reduced-motion emulated to "no-preference" (normal motion path).
+
+--- browser_console_messages(level=error), full 5-node happy-path session ---
+
+[ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:4173/static/media/profile.jpg:0
+[ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:4173/static/media/profile.jpg:0
+
+Total error-level messages: 2 (both are the SAME expected, documented profile.jpg 404 —
+see .omo/notepads/threejs-portfolio-game/learnings.md Todo 5/7/8 entries).
+
+Annotation (expected 404 exemption):
+- `static/media/profile.jpg` does not exist on disk (user-supplied asset, never
+  created by any todo — confirmed in Todo 3/5 learnings). Every real page load
+  naturally produces this 404 network request from TWO independent code paths
+  that both reference `CONTENT.about.photo`:
+    1. `static/js/nodes.js`'s `createAboutNode()` — `THREE.TextureLoader().load(...)`
+       for the photo Sprite, fired once at `createNodes()` time (main.js boot).
+    2. `static/js/ui.js`'s `renderAbout()` — a plain `<img src="./static/media/profile.jpg">`,
+       fired only when the `about` info panel is actually opened by clicking the
+       About node.
+  Both failures are caught by their own `onError`/`error` handlers and fall back
+  to `profile-placeholder.svg` without throwing — this is the SAME named,
+  documented 404 (not two different unrelated errors) and does NOT count as a
+  QA failure per the plan's explicit exemption for `static/media/profile.jpg`.
+- Zero OTHER console errors were observed across the full session (5 node
+  clicks + finale + no-WebGL failure-path reload).
+
+--- browser_console_messages(level=warning) ---
+
+[WARNING] WebGL: INVALID_VALUE: texSubImage2D: bad image data @ https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js:10649
+[WARNING] [.WebGL-0x114000f8c00] GL_INVALID_OPERATION: glTexImage2DRobustANGLE: Texture is immutable. @ http://localhost:4173/:0
+
+Both warnings are direct side effects of the same missing profile.jpg (the
+renderer attempts to upload the failed/empty image response as a WebGL texture
+before the async onError fallback swaps in profile-placeholder.svg). The plan's
+console-error exemption is scoped to `browser_console_messages(level=error)`
+specifically; these are warning-level and are also entirely attributable to the
+same single documented missing asset, not a new/unrelated defect.
+
+--- browser_network_requests (filtered: profile) ---
+
+[GET] http://localhost:4173/static/media/profile.jpg => [404] File not found
+  (appears once per code path per fresh page load: nodes.js Sprite texture load
+  + ui.js <img> load when the About panel is opened; multiple reloads across
+  this QA session produced multiple log lines for the same single asset.)
+
+--- requestAnimationFrame instrumentation (see task narrative) ---
+
+Reduced motion (`prefers-reduced-motion: reduce`):
+  window.__RAF_CALLS__ after 1500ms idle = 1   (exactly one scheduled frame,
+  no further frames scheduled — confirmed via a wrapped requestAnimationFrame
+  counter installed with page.addInitScript before main.js executed)
+  window.__DATA_ORBIT_DEBUG__.isReducedMotion = true
+
+Normal motion (no reduced-motion preference):
+  window.__RAF_CALLS__ at +500ms  = 60
+  window.__RAF_CALLS__ at +1000ms = 121  (delta ~61 calls per 500ms window,
+  i.e. a single continuous ~60fps loop — NOT ~120/500ms, which would indicate
+  two concurrent requestAnimationFrame loops running simultaneously)
+  window.__DATA_ORBIT_DEBUG__.isReducedMotion = false
+
+--- window.__DATA_ORBIT_DEBUG__ shape check ---
+
+Object.keys(window.__DATA_ORBIT_DEBUG__).sort() ===
+  ["camera","isReducedMotion","isWebGLAvailable","nodes","renderer","scene"]
+window.__DATA_ORBIT_DEBUG__.nodes.length === 5
+
+--- 5-node real-click playthrough summary (screenshots 01-06) ---
+
+01.png - initial load, all 5 nodes visible in default overview camera position.
+02.png - after real click on `about` node (hit-tested via genuine mouse
+         pointerdown/pointerup on the canvas): hud "1 / 5 explored", info
+         panel heading "장병희".
+03.png - after real click on `career`: hud "2 / 5 explored", info panel
+         heading "Data Engineer @ KIA".
+04.png - after real click on `techStack`: hud "3 / 5 explored", info panel
+         heading "Tech Stack".
+05.png - after real click on `oss` (hit-verified via a raycast reproduction of
+         interactions.js's own `getHitObject()` algorithm against the live
+         `window.__DATA_ORBIT_DEBUG__.nodes`/`.camera`, since the camera's
+         fly-to framing after each click moves other nodes around the
+         viewport): hud "5 / 5 explored" (the completion threshold — visiting
+         `oss` as the 4th NEW node while `play`/`about`/`career`/`techStack`
+         were already visited from the same session completes the 5/5 set),
+         `window.dispatchEvent(data-orbit:complete)` fired, finale overlay
+         present.
+06.png - finale overlay fully rendered: title "🎉 5개 노드 완주!", message
+         text, and a real `<a>` CTA resolving to
+         https://github.com/jangByeongHui — confirmed via `browser_snapshot`.
+
+Every click was a genuine `page.mouse.move/down/up`-driven pointer gesture on
+the actual `renderer.domElement` canvas (not a synthetic `.click()`/module
+call), including a live camera-orbit drag gesture between clicks whenever the
+target node had flown out of the current camera framing (per the fly-to
+mechanic's design: the camera zooms in on whichever node was last clicked, so
+subsequent nodes may require the user — or this QA script — to orbit-drag
+before the next node is reachable). Before each click, a raycast identical to
+`interactions.js`'s own `getHitObject()` was replayed against the live scene
+to confirm the intended node (and not an occluding node) would actually be
+hit, matching the plan's requirement that this be a REAL end-to-end
+playthrough rather than a coordinate guess.
+
+No-WebGL failure-path evidence is in a separate file:
+  .omo/evidence/threejs-portfolio-game/task-9-nowebgl-failure.md
+  .omo/evidence/threejs-portfolio-game/task-9-fallback-nowebgl.png

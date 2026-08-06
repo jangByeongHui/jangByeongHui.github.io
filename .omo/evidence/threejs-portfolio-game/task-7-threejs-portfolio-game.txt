@@ -1,0 +1,34 @@
+Todo 7 — static/js/ui.js — Failure-path QA (console dump)
+
+Scenario: dispatch `window.dispatchEvent(new CustomEvent('data-orbit:node-select', { detail: { id: 'doesnotexist' } }))`
+against a page where `initUI({ content: CONTENT })` was already active and the panel
+was currently showing the `about` node (from the prior happy-path run).
+
+Result (via Playwright browser_evaluate, try/catch around the dispatch):
+  threw: false
+  thrownMessage: null
+
+Panel state BEFORE the failure dispatch:
+  hidden: false
+  headingText: "장병희"
+  hud: "5 / 5 explored"
+  infoBodyHTML: <h2 id="info-panel-heading">장병희</h2><img class="info-photo" alt="장병희" src="./static/media/profile.jpg"><p class="info-tagline">심심함을 프로젝트로 바꾸는 사람, 장병희</p><ul class="info-keyword-chips"><li class="info-chip">Build Fast</li><li class="info-chip">Curious Maker</li><li class="info-chip">Playful Thinking</li><li class="info-chip">하고 싶은게 생기면 당장 해봐야 직성이 풀려요</li></ul><p class="info-hobby">취미: 영화 보기</p><p class="info-motto">날 죽이지 못한 고통은 날 강하게 만들 뿐이다</p><p class="info-location">인천, Republic of Korea</p>
+
+Panel state AFTER the failure dispatch (byte-identical to BEFORE):
+  hidden: false
+  headingText: "장병희"
+  hud: "5 / 5 explored"
+  infoBodyHTML: <h2 id="info-panel-heading">장병희</h2><img class="info-photo" alt="장병희" src="./static/media/profile.jpg"><p class="info-tagline">심심함을 프로젝트로 바꾸는 사람, 장병희</p><ul class="info-keyword-chips"><li class="info-chip">Build Fast</li><li class="info-chip">Curious Maker</li><li class="info-chip">Playful Thinking</li><li class="info-chip">하고 싶은게 생기면 당장 해봐야 직성이 풀려요</li></ul><p class="info-hobby">취미: 영화 보기</p><p class="info-motto">날 죽이지 못한 고통은 날 강하게 만들 뿐이다</p><p class="info-location">인천, Republic of Korea</p>
+
+panelUnaffected (headingText/infoBodyHTML/hidden/hud all equal before vs after): true
+
+Console output captured immediately after the dispatch:
+  [WARNING] [ui] Unrecognized node id: doesnotexist @ http://localhost:4173/static/js/ui.js:210
+
+No uncaught exception. No additional console.error beyond the pre-existing/expected
+profile.jpg 404 (unrelated network resource error from the earlier happy-path `about`
+render, not caused by this failure dispatch). `data-orbit:complete` counter unchanged
+at 1 (not re-fired by the invalid dispatch).
+
+Conclusion: PASS — unrecognized `detail.id` is a no-op (console.warn only), never
+throws, and leaves `#info-panel` completely unaffected.

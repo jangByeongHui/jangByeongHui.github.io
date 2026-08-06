@@ -1,0 +1,80 @@
+{
+  "normal_motion_webgl_available": true,
+  "normal_motion_isReducedMotion_flag": false,
+  "normal_motion_raf_at_t": 103,
+  "normal_motion_raf_at_t+500ms": 155,
+  "normal_motion_playthrough": [
+    {
+      "node": "about",
+      "attempts_to_bring_into_view": 0,
+      "final_projection": {
+        "x": 986.0455148470896,
+        "y": 394.6663220699171,
+        "ndcX": 0.5406961169485777,
+        "ndcY": 0.013334194825207231,
+        "inView": true
+      },
+      "clicked": true,
+      "heading_after": "장병희"
+    },
+    {
+      "node": "career",
+      "attempts_to_bring_into_view": 7,
+      "final_projection": {
+        "x": 352.99079005428234,
+        "y": 557.0864823668638,
+        "ndcX": -0.44845189054018386,
+        "ndcY": -0.3927162059171596,
+        "inView": true
+      },
+      "clicked": true,
+      "heading_after": "Data Engineer @ KIA"
+    },
+    {
+      "node": "techStack",
+      "attempts_to_bring_into_view": 8,
+      "final_projection": {
+        "x": 1094.2907613968518,
+        "y": 1020.6321438920252,
+        "ndcX": 0.7098293146825808,
+        "ndcY": -1.5515803597300628,
+        "inView": false
+      },
+      "clicked": false,
+      "heading_after": null
+    },
+    {
+      "node": "oss",
+      "attempts_to_bring_into_view": 4,
+      "final_projection": {
+        "x": 1143.7195203738447,
+        "y": 299.4847920257981,
+        "ndcX": 0.7870617505841321,
+        "ndcY": 0.2512880199355047,
+        "inView": true
+      },
+      "clicked": true,
+      "heading_after": "OSS"
+    },
+    {
+      "node": "play",
+      "attempts_to_bring_into_view": 0,
+      "final_projection": {
+        "x": 1101.1705397311457,
+        "y": 317.389519778297,
+        "ndcX": 0.7205789683299151,
+        "ndcY": 0.20652620055425752,
+        "inView": true
+      },
+      "clicked": true,
+      "heading_after": "진행 상황"
+    }
+  ],
+  "normal_motion_hud_final": "4 / 5 explored",
+  "normal_motion_finale_present": false,
+  "normal_motion_raf_after_playthrough": 1813,
+  "normal_motion_console_errors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)",
+    "Failed to load resource: the server responded with a status of 404 (File not found)"
+  ]
+}
