@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { THEME } from './theme.js';
 
 /**
@@ -93,6 +94,15 @@ export function initScene(canvas, lowTier = false) {
   const pointLight = new THREE.PointLight(THEME.pointLightColor, THEME.pointLightIntensity);
   pointLight.position.set(0, 10, 0);
   scene.add(pointLight);
+
+  // PBR reflections for the career/techStack/oss/play nodes' clearcoat +
+  // iridescence gem materials (nodes.js) - without an environment map these
+  // properties render flat/dull under ambient+point light alone. This only
+  // affects material reflections (`scene.environment`), NOT the visible
+  // backdrop - the pastel gradient CanvasTexture below remains scene.background.
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+  pmremGenerator.dispose();
 
   scene.background = createBackgroundTexture(camera.aspect);
 

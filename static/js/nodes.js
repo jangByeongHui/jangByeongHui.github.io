@@ -82,11 +82,27 @@ function createAboutNode(THEME, CONTENT) {
 }
 
 /**
- * Builds a procedural-geometry mesh node with a THREE.MeshStandardMaterial
- * colored from THEME, tagged `.userData = { id }`.
+ * Builds a procedural-geometry mesh node with a THREE.MeshPhysicalMaterial
+ * (clearcoat + iridescence "gem" finish, relies on `scene.environment` set in
+ * scene.js for the reflections to actually read as glossy rather than flat)
+ * colored from THEME, tagged `.userData = { id }`. `MeshPhysicalMaterial`
+ * extends `MeshStandardMaterial` and still sets `isMeshStandardMaterial =
+ * true` on its instances, so `interactions.js`'s existing
+ * `material.isMeshStandardMaterial` hover-highlight check keeps working
+ * unchanged.
  */
 function createMeshNode(id, geometry, color) {
-  const material = new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.1 });
+  const material = new THREE.MeshPhysicalMaterial({
+    color,
+    roughness: 0.2,
+    metalness: 0.05,
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.15,
+    iridescence: 0.5,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [100, 400],
+    envMapIntensity: 1.1,
+  });
   const mesh = new THREE.Mesh(geometry, material);
   mesh.userData = { id };
   return mesh;
@@ -112,15 +128,15 @@ export function createNodes(scene, THEME, CONTENT, lowTier = false) {
       case 'about':
         return createAboutNode(THEME, CONTENT);
       case 'career':
-        return createMeshNode('career', new THREE.IcosahedronGeometry(1, 0), THEME.nodeColors.career);
+        return createMeshNode('career', new THREE.DodecahedronGeometry(1, 0), THEME.nodeColors.career);
       case 'techStack':
         return createMeshNode(
           'techStack',
-          new THREE.TorusKnotGeometry(0.8, 0.25, lowTier ? 50 : 100, lowTier ? 8 : 16),
+          new THREE.TorusKnotGeometry(0.8, 0.25, lowTier ? 50 : 100, lowTier ? 8 : 16, 2, 5),
           THEME.nodeColors.techStack
         );
       case 'oss':
-        return createMeshNode('oss', new THREE.OctahedronGeometry(1, 0), THEME.nodeColors.oss);
+        return createMeshNode('oss', new THREE.OctahedronGeometry(1, 1), THEME.nodeColors.oss);
       case 'play':
         return createMeshNode(
           'play',

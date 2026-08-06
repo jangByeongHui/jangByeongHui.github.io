@@ -175,6 +175,12 @@ function boot() {
 
     controls.update();
     interactions.update(deltaTime);
+    nodes.forEach((node) => {
+      if (node.userData.id !== 'about') {
+        node.rotation.y += deltaTime * 0.0004;
+        node.rotation.x += deltaTime * 0.00015;
+      }
+    });
     renderer.render(scene, camera);
 
     requestAnimationFrame(renderLoop);
