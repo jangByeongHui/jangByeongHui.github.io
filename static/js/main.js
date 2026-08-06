@@ -147,11 +147,23 @@ function boot() {
   };
 
   if (isReducedMotion) {
-    // Exactly one scheduled frame - via requestAnimationFrame, never a direct
-    // synchronous renderer.render() call - and no further frames scheduled.
-    requestAnimationFrame(() => {
-      renderer.render(scene, camera);
-    });
+    // No continuous loop under reduced motion - but each one-off render below
+    // fires via requestAnimationFrame (never a direct synchronous
+    // renderer.render() call, never self-rescheduling), one per discrete
+    // state change, so the canvas doesn't go stale after a click/resize:
+    // `flyToNode` snaps the camera synchronously BEFORE our next paint runs,
+    // and scene.js's own resize listener (registered earlier, inside
+    // `initScene`) updates aspect/background before ours (registered after)
+    // schedules the repaint.
+    const scheduleReducedMotionRender = () => {
+      requestAnimationFrame(() => {
+        renderer.render(scene, camera);
+      });
+    };
+
+    scheduleReducedMotionRender();
+    window.addEventListener('data-orbit:node-select', scheduleReducedMotionRender);
+    window.addEventListener('resize', scheduleReducedMotionRender);
     return;
   }
 
