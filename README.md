@@ -1,8 +1,6 @@
-# jangByeongHui.github.io
+# WEDDING // BUILD 2027
 
-자기소개를 게임처럼 탐험할 수 있는 인터랙티브 프로필 페이지입니다.
-
-three.js 기반, 빌드 도구 없이 import map + CDN으로 동작합니다.
+장병희와 PJG의 결혼식 청첩장입니다. 정적 HTML, CSS, JavaScript로 구성되어 GitHub Pages에서 바로 배포됩니다.
 
 ## 로컬 실행
-`npx serve .` (또는 `python3 -m http.server`) 실행 후 출력된 로컬 주소를 브라우저에서 여세요.
+`python3 -m http.server 4173` 후 `http://localhost:4173`에서 확인할 수 있습니다.
