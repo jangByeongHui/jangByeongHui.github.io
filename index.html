@@ -1,81 +1,141 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>장병희 - DATA ORBIT | 3D 자기소개 게임</title>
-  <meta name="description" content="three.js로 만든 3D 인터랙티브 자기소개: 5개의 노드를 탐험하며 장병희의 커리어, 기술 스택, 오픈소스 기여, 그리고 소소한 이야기를 만나보세요." />
-  <meta property="og:title" content="장병희 - DATA ORBIT | 3D 자기소개 게임" />
-  <meta property="og:description" content="three.js로 만든 3D 인터랙티브 자기소개: 5개의 노드를 탐험하며 장병희의 커리어, 기술 스택, 오픈소스 기여, 그리고 소소한 이야기를 만나보세요." />
+  <title>WEDDING // BUILD 2027 — 장병희 &amp; PJG</title>
+  <meta name="description" content="장병희와 PJG의 결혼식 초대장입니다. 2027년 6월 27일 오후 12시, 현대*기아 양재 사옥 그랜드 홀." />
+  <meta property="og:title" content="WEDDING // BUILD 2027 — 장병희 &amp; PJG" />
+  <meta property="og:description" content="2027년 6월 27일 오후 12시, 현대*기아 양재 사옥 그랜드 홀에서 함께해주세요." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://jangbyeonghui.github.io/" />
   <link rel="canonical" href="https://jangbyeonghui.github.io/" />
   <link rel="icon" href="data:," />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
-
-  <link rel="stylesheet" href="./static/css/game.css" />
-
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
-    }
-  }
-  </script>
+  <link rel="stylesheet" href="./static/css/invitation.css" />
 </head>
 <body>
-  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="ide-shell">
+    <header class="ide-titlebar">
+      <div class="ide-traffic" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="ide-path">invitation-project — ~/2027/wedding/JANG_and_PJG</p>
+      <p class="ide-menu" aria-hidden="true">File&nbsp;&nbsp;Edit&nbsp;&nbsp;View&nbsp;&nbsp;Navigate&nbsp;&nbsp;Build&nbsp;&nbsp;Run&nbsp;&nbsp;VCS&nbsp;&nbsp;Window&nbsp;&nbsp;Help</p>
+    </header>
 
-  <div id="hud"></div>
+    <nav class="ide-tabbar" aria-label="열린 파일 탭">
+      <a href="#top" class="ide-tab is-active"><span class="file-dot dot-tsx" aria-hidden="true"></span>invitation.tsx</a>
+      <a href="#ceremony" class="ide-tab is-locked" aria-disabled="true" tabindex="-1"><span class="file-dot dot-yml" aria-hidden="true"></span>ceremony.yml</a>
+      <a href="#location" class="ide-tab is-locked" aria-disabled="true" tabindex="-1"><span class="file-dot dot-json" aria-hidden="true"></span>location.json</a>
+      <a href="#access" class="ide-tab is-locked" aria-disabled="true" tabindex="-1"><span class="file-dot dot-log" aria-hidden="true"></span>access.log</a>
+    </nav>
 
-  <div id="info-panel" class="hidden" role="dialog" aria-live="polite" aria-labelledby="info-panel-heading">
-    <button class="close" aria-label="닫기">×</button>
-    <div class="info-body"></div>
+    <main>
+      <section class="hero" id="top" aria-labelledby="invitation-title">
+        <div class="hero-intro" data-hero-intro hidden>
+          <p class="eyebrow"><span class="gutter-num" aria-hidden="true">01</span>// A NEW BRANCH BEGINS</p>
+          <h1 id="invitation-title"><span>JANG</span><span class="amp">&amp;</span><span>PJG</span></h1>
+          <p class="hero-tagline"><span class="comment">/* 우리가 서로의 오래된 미래가 되기로 했습니다.</span><br /><span class="comment">그 첫 장면에 함께해주세요. */</span></p>
+        </div>
+        <div class="hero-actions">
+          <button class="command-button build-trigger" type="button" data-build-invitation aria-controls="build-console"><span aria-hidden="true">▶</span> Run 'invitation'</button>
+        </div>
+        <section class="watches-panel" data-hero-watches hidden aria-label="라이브 카운트다운 워치">
+          <div class="terminal-bar"><span class="file-dot dot-json" aria-hidden="true"></span><p>Debug — Watches</p></div>
+          <dl class="watch-rows">
+            <div><dt>daysUntilWedding()</dt><dd data-countdown-days aria-hidden="true">D-–</dd></div>
+            <div><dt>liveCountdown()</dt><dd data-countdown-clock aria-hidden="true">–d –h –m –s</dd></div>
+          </dl>
+          <p class="sr-only" data-countdown-sr aria-live="polite"></p>
+        </section>
+        <section class="build-console" id="build-console" data-build-console hidden aria-label="실행 콘솔">
+          <div class="console-heading"><span>Run: invitation</span><span data-build-status>idle</span></div>
+          <output data-build-output aria-live="off">› waiting for guest interaction...</output>
+          <p class="sr-only" data-build-sr aria-live="polite"></p>
+        </section>
+        <section class="next-window" data-next-window hidden aria-label="새로 열린 파일 탭" aria-live="polite">
+          <div class="terminal-bar"><span class="file-dot dot-yml" aria-hidden="true"></span><p>ceremony_details.kt — opened</p></div>
+          <p><span class="comment">// 새 탭에서 예식 정보를 확인할 수 있습니다.</span><span class="cursor" aria-hidden="true"></span></p>
+          <a href="#ceremony" class="scroll-link">OPEN ceremony_details.kt <span aria-hidden="true">↳</span></a>
+        </section>
+      </section>
+
+      <section class="locked-gate grid-section" data-locked-gate hidden aria-label="빌드 잠금 상태">
+        <div class="section-label"><span>!</span><p>access_denied.log</p></div>
+        <div class="terminal-panel">
+          <div class="terminal-bar"><span class="file-dot dot-log" aria-hidden="true"></span><p>access_denied.log</p></div>
+          <pre aria-label="빌드 필요 오류"><code><span class="line"><span class="key">error</span>: <span class="value">ERR_BUILD_REQUIRED</span></span>
+<span class="line">  <span class="key">message</span>: <span class="value">예식 정보는 빌드 완료 후에만 조회할 수 있습니다.</span></span>
+<span class="line">  <span class="key">hint</span>: <span class="value">위 'Run invitation' 버튼을 눌러 빌드를 완료하세요.</span><span class="cursor" aria-hidden="true"></span></span></code></pre>
+        </div>
+        <aside class="lock-requirements" aria-label="잠금 해제 조건">
+          <p>UNLOCK_REQUIREMENTS</p>
+          <p><span class="status-dot is-pending"></span> RUN_INVITATION / PENDING</p>
+        </aside>
+      </section>
+
+      <div class="gated-content" data-gated-content hidden>
+      <section class="manifest grid-section" id="ceremony" aria-labelledby="manifest-title">
+        <div class="section-label"><span>02</span><p>ceremony.yml</p></div>
+        <div class="terminal-panel">
+          <div class="terminal-bar"><span class="file-dot dot-yml" aria-hidden="true"></span><p>ceremony.yml</p></div>
+          <pre aria-label="결혼식 실행 정보" class="has-gutter"><code><span class="line"><span class="prompt">wedding</span>:</span>
+<span class="line">  <span class="key">couple</span>:</span>
+<span class="line">    <span class="key">groom</span>: <span class="value">장병희</span></span>
+<span class="line">    <span class="key">bride</span>: <span class="value">PJG</span></span>
+<span class="line">  <span class="key">schedule</span>:</span>
+<span class="line">    <span class="key">date</span>: <span class="value">2027.06.27 / SUN</span></span>
+<span class="line">    <span class="key">time</span>: <span class="value">12:00 PM</span></span>
+<span class="line">  <span class="key">status</span>: <span class="success">COMMITTING FOR LIFE</span><span class="cursor" aria-hidden="true"></span></span></code></pre>
+        </div>
+        <div class="manifest-copy">
+          <h2 id="manifest-title">두 사람의<br /><em>첫 릴리스</em>에<br />초대합니다.</h2>
+          <p>각자의 시간을 지나 만난 두 사람이 같은 방향으로 걸어가려 합니다.<br />소중한 분들과 그 시작을 나누고 싶습니다.</p>
+          <dl><div><dt>DATE</dt><dd>2027년 6월 27일 일요일</dd></div><div><dt>TIME</dt><dd>오후 12시</dd></div></dl>
+        </div>
+      </section>
+
+      <section class="location grid-section" id="location" aria-labelledby="location-title">
+        <div class="section-label"><span>03</span><p>location.json</p></div>
+        <div class="location-copy">
+          <h2 id="location-title">현대*기아 양재 사옥<br /><em>그랜드 홀</em></h2>
+          <p>서울특별시 서초구 헌릉로 12</p>
+          <button class="command-button" type="button" data-copy-address aria-describedby="copy-status"><span aria-hidden="true">⧉</span> Copy address</button>
+          <p id="copy-status" class="copy-status" aria-live="polite"></p>
+        </div>
+        <div class="coordinate-card" aria-label="예식 장소 좌표">
+          <p>LOCATION / 37.4627° N, 127.0414° E</p>
+          <div class="crosshair" aria-hidden="true"><i></i><i></i><b></b></div>
+          <p>SEOUL / YANGJAE<br />GRAND HALL</p>
+        </div>
+      </section>
+
+      <section class="access grid-section" id="access" aria-labelledby="access-title">
+        <div class="section-label"><span>04</span><p>access.log</p></div>
+        <div class="access-copy">
+          <h2 id="access-title">도착 경로를<br /><em>merge</em>하세요.</h2>
+          <dl class="access-details">
+            <div><dt>PARKING</dt><dd>주차타워 지상층 / 최대 400대 주차&nbsp;가능</dd></div>
+            <div>
+              <dt>SUBWAY</dt>
+              <dd><strong>신분당선 양재시민의숲역 4번 출구</strong><br />aT센터·화훼공판장 방향으로 직진<br /><span class="route-step">→ 염곡사거리에서 횡단보도 이용</span><br /><span>도보 약 10~15분</span></dd>
+            </div>
+          </dl>
+        </div>
+        <aside class="access-note" aria-label="교통 안내 상태">
+          <p>TRANSPORT_STATUS</p>
+          <p><span class="status-dot"></span> PARKING_CAPACITY / 400</p>
+          <p><span class="status-dot"></span> SUBWAY_ROUTE / READY</p>
+          <p><span class="status-dot"></span> BUILD_SESSION / READY</p>
+        </aside>
+      </section>
+
+      <footer><p>THANK YOU FOR BEING PART OF OUR STORY.</p><p>JANG BYEONGHUI &amp; PJG / 2027</p></footer>
+      </div>
+    </main>
+
+    <footer class="ide-statusbar">
+      <p>UTF-8</p><p>LF</p><p>Git: main</p><p data-live-clock aria-hidden="true">--:--:--</p><p aria-live="polite" data-run-status>Run: idle</p>
+    </footer>
   </div>
-
-  <div id="fallback" class="hidden"></div>
-
-  <noscript>
-    <h1>장병희 — DATA ORBIT</h1>
-    <section>
-      <h2>About</h2>
-      <p>심심함을 프로젝트로 바꾸는 사람, 장병희</p>
-      <p>모토: 날 죽이지 못한 고통은 날 강하게 만들 뿐이다</p>
-      <p>취미: 영화 보기</p>
-    </section>
-    <section>
-      <h2>Career</h2>
-      <p>Data Engineer @ KIA</p>
-      <p>OpenCV 기반 주차장 관제 및 보행자 측위 시스템 개발</p>
-    </section>
-    <section>
-      <h2>Tech Stack</h2>
-      <ul>
-        <li>Data Engineering: Python, Apache Spark, Apache Airflow, Apache Kafka, Hadoop</li>
-        <li>Backend &amp; Frontend: Java, Spring Boot, TypeScript, React</li>
-        <li>Infra &amp; Monitoring: Grafana, Docker</li>
-      </ul>
-    </section>
-    <section>
-      <h2>OSS</h2>
-      <ul>
-        <li>code-yeongyu/oh-my-openagent #4176 — fix(skill-mcp-manager): trust explicit skill MCP env vars</li>
-        <li>apache/airflow #67225 — Fix DockerOperator on_kill to respect auto_remove='force'</li>
-        <li>danny-avila/LibreChat #13154 — fix: Honor OPENID_REUSE_TOKENS in Admin OAuth Exchange</li>
-      </ul>
-    </section>
-    <section>
-      <h2>Play</h2>
-      <p>여기까지 다 눌러보셨다니... 진짜 궁금한 게 많으신 분이거나, 그냥 저처럼 "일단 해보고 보는" 스타일이시겠네요. 실제 이야기는 여기서 이어집니다 👇</p>
-      <p><a href="https://github.com/jangByeongHui">GitHub에서 만나기</a></p>
-    </section>
-  </noscript>
-
-  <script type="module" src="./static/js/main.js"></script>
+  <script src="./static/js/invitation.js" defer></script>
 </body>
 </html>
