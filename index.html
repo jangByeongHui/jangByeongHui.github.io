@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WEDDING // BUILD 2027 — 장병희 &amp; PJG</title>
-  <meta name="description" content="장병희와 PJG의 결혼식 초대장입니다. 2027년 6월 27일 오후 12시, 현대*기아 양재 사옥 그랜드 홀." />
+  <meta name="description" content="장병희와 PJG의 결혼식 초대장입니다. 2027년 6월 27일 오후 12시, 현대자동차기아빌딩 그랜드 홀." />
   <meta property="og:title" content="WEDDING // BUILD 2027 — 장병희 &amp; PJG" />
-  <meta property="og:description" content="2027년 6월 27일 오후 12시, 현대*기아 양재 사옥 그랜드 홀에서 함께해주세요." />
+  <meta property="og:description" content="2027년 6월 27일 오후 12시, 현대자동차기아빌딩 그랜드 홀에서 함께해주세요." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://jangbyeonghui.github.io/" />
   <link rel="canonical" href="https://jangbyeonghui.github.io/" />
@@ -26,6 +26,7 @@
       <a href="#ceremony" class="ide-tab is-locked" aria-disabled="true" tabindex="-1"><span class="file-dot dot-yml" aria-hidden="true"></span>ceremony.yml</a>
       <a href="#location" class="ide-tab is-locked" aria-disabled="true" tabindex="-1"><span class="file-dot dot-json" aria-hidden="true"></span>location.json</a>
       <a href="#access" class="ide-tab is-locked" aria-disabled="true" tabindex="-1"><span class="file-dot dot-log" aria-hidden="true"></span>access.log</a>
+      <a href="#contribute" class="ide-tab is-locked" aria-disabled="true" tabindex="-1"><span class="file-dot dot-yml" aria-hidden="true"></span>CONTRIBUTING.md</a>
     </nav>
 
     <main>
@@ -73,6 +74,22 @@
       </section>
 
       <div class="gated-content" data-gated-content hidden>
+      <section class="aisle-section" aria-label="신랑 신부 입장 애니메이션">
+        <div class="section-label"><span>✦</span><p>aisle_walk.sh</p></div>
+        <div class="terminal-panel aisle-panel">
+          <div class="terminal-bar"><span class="file-dot dot-tsx" aria-hidden="true"></span><p>aisle_walk.sh — running</p></div>
+          <div class="aisle-stage" role="img" aria-label="신랑과 신부가 서로를 향해 걸어와 결혼식장 중앙에서 만나 반지를 나누는 애니메이션">
+            <span class="aisle-figure aisle-groom" aria-hidden="true">🤵</span>
+            <span class="aisle-figure aisle-bride" aria-hidden="true">👰</span>
+            <span class="aisle-union" aria-hidden="true">💍</span>
+          </div>
+          <pre class="aisle-log" aria-hidden="true"><code><span class="line"><span class="prompt">$</span> ./aisle_walk.sh</span>
+<span class="line">  <span class="key">groom</span>.<span class="value">walkTo</span>(bride);</span>
+<span class="line">  <span class="key">bride</span>.<span class="value">walkTo</span>(groom);</span>
+<span class="line">  <span class="success">✓ MERGE COMPLETE — status: MARRIED</span><span class="cursor" aria-hidden="true"></span></span></code></pre>
+        </div>
+      </section>
+
       <section class="manifest grid-section" id="ceremony" aria-labelledby="manifest-title">
         <div class="section-label"><span>02</span><p>ceremony.yml</p></div>
         <div class="terminal-panel">
@@ -96,36 +113,88 @@
       <section class="location grid-section" id="location" aria-labelledby="location-title">
         <div class="section-label"><span>03</span><p>location.json</p></div>
         <div class="location-copy">
-          <h2 id="location-title">현대*기아 양재 사옥<br /><em>그랜드 홀</em></h2>
+          <h2 id="location-title">현대자동차기아빌딩<br /><em>그랜드 홀</em></h2>
           <p>서울특별시 서초구 헌릉로 12</p>
           <button class="command-button" type="button" data-copy-address aria-describedby="copy-status"><span aria-hidden="true">⧉</span> Copy address</button>
           <p id="copy-status" class="copy-status" aria-live="polite"></p>
+          <div class="map-links" role="group" aria-label="지도 앱으로 위치 보기">
+            <a class="command-button map-link" href="https://map.kakao.com/link/search/%ED%98%84%EB%8C%80%EC%9E%90%EB%8F%99%EC%B0%A8%EA%B8%B0%EC%95%84%EB%B9%8C%EB%94%A9" target="_blank" rel="noopener noreferrer">카카오맵<span aria-hidden="true"> ↗</span></a>
+            <a class="command-button map-link" href="https://map.naver.com/p/search/%ED%98%84%EB%8C%80%EC%9E%90%EB%8F%99%EC%B0%A8%EA%B8%B0%EC%95%84%EB%B9%8C%EB%94%A9" target="_blank" rel="noopener noreferrer">네이버지도<span aria-hidden="true"> ↗</span></a>
+            <a class="command-button map-link" href="https://www.google.com/maps/search/?api=1&amp;query=37.4627,127.0414" target="_blank" rel="noopener noreferrer">Google 지도<span aria-hidden="true"> ↗</span></a>
+          </div>
         </div>
         <div class="coordinate-card" aria-label="예식 장소 좌표">
           <p>LOCATION / 37.4627° N, 127.0414° E</p>
           <div class="crosshair" aria-hidden="true"><i></i><i></i><b></b></div>
           <p>SEOUL / YANGJAE<br />GRAND HALL</p>
         </div>
-      </section>
-
-      <section class="access grid-section" id="access" aria-labelledby="access-title">
-        <div class="section-label"><span>04</span><p>access.log</p></div>
-        <div class="access-copy">
-          <h2 id="access-title">도착 경로를<br /><em>merge</em>하세요.</h2>
-          <dl class="access-details">
-            <div><dt>PARKING</dt><dd>주차타워 지상층 / 최대 400대 주차&nbsp;가능</dd></div>
-            <div>
-              <dt>SUBWAY</dt>
-              <dd><strong>신분당선 양재시민의숲역 4번 출구</strong><br />aT센터·화훼공판장 방향으로 직진<br /><span class="route-step">→ 염곡사거리에서 횡단보도 이용</span><br /><span>도보 약 10~15분</span></dd>
-            </div>
-          </dl>
-        </div>
-        <aside class="access-note" aria-label="교통 안내 상태">
+        <dl class="access-details location-details">
+          <div><dt>PARKING</dt><dd>주차타워 지상층 / 최대 400대 주차&nbsp;가능</dd></div>
+          <div>
+            <dt>SUBWAY</dt>
+            <dd><strong>신분당선 양재시민의숲역 4번 출구</strong><br />aT센터·화훼공판장 방향으로 직진<br /><span class="route-step">→ 염곡사거리에서 횡단보도 이용</span><br /><span>도보 약 10~15분</span></dd>
+          </div>
+        </dl>
+        <aside class="access-note location-status" aria-label="교통 안내 상태">
           <p>TRANSPORT_STATUS</p>
           <p><span class="status-dot"></span> PARKING_CAPACITY / 400</p>
           <p><span class="status-dot"></span> SUBWAY_ROUTE / READY</p>
           <p><span class="status-dot"></span> BUILD_SESSION / READY</p>
         </aside>
+      </section>
+
+      <section class="access grid-section" id="access" aria-labelledby="access-title">
+        <div class="section-label"><span>04</span><p>access.log</p></div>
+        <div class="access-copy">
+          <h2 id="access-title">일정을 캘린더에<br /><em>commit</em>하세요.</h2>
+          <dl>
+            <div><dt>DATE</dt><dd>2027년 6월 27일 일요일</dd></div>
+            <div><dt>TIME</dt><dd>오후 12시</dd></div>
+          </dl>
+          <div class="calendar-actions">
+            <button class="command-button" type="button" data-add-google-calendar><span aria-hidden="true">＋</span> Add to Google Calendar</button>
+            <button class="command-button" type="button" data-download-ics><span aria-hidden="true">↓</span> Download .ics</button>
+          </div>
+          <p id="calendar-status" class="copy-status" aria-live="polite"></p>
+        </div>
+        <aside class="access-note" aria-label="일정 등록 상태">
+          <p>SCHEDULE_STATUS</p>
+          <p><span class="status-dot"></span> EVENT_TITLE / SET</p>
+          <p><span class="status-dot"></span> GOOGLE_CALENDAR / READY</p>
+          <p><span class="status-dot"></span> ICS_EXPORT / READY</p>
+        </aside>
+      </section>
+
+      <section class="contribute grid-section" id="contribute" aria-labelledby="contribute-title">
+        <div class="section-label"><span>05</span><p>CONTRIBUTING.md</p></div>
+        <div class="contribute-copy">
+          <h2 id="contribute-title">이 프로젝트에<br /><em>contribute</em>하기</h2>
+          <p>참석이 어려우신 분들을 위해 계좌번호를 안내드립니다.<br />마음만으로도 충분히 감사한 축하입니다.</p>
+        </div>
+        <div class="contribute-accounts">
+          <div class="terminal-panel account-card">
+            <div class="terminal-bar"><span class="file-dot dot-tsx" aria-hidden="true"></span><p>groom.contributor</p></div>
+            <div class="account-body">
+              <dl class="account-details">
+                <div><dt>예금주</dt><dd>장병희</dd></div>
+                <div><dt>계좌</dt><dd>은행명 000-0000-0000000</dd></div>
+              </dl>
+              <button class="command-button" type="button" data-copy-account="은행명 000-0000-0000000 (장병희)" aria-describedby="copy-status-groom"><span aria-hidden="true">⧉</span> Copy account</button>
+              <p id="copy-status-groom" class="copy-status" aria-live="polite"></p>
+            </div>
+          </div>
+          <div class="terminal-panel account-card">
+            <div class="terminal-bar"><span class="file-dot dot-yml" aria-hidden="true"></span><p>bride.contributor</p></div>
+            <div class="account-body">
+              <dl class="account-details">
+                <div><dt>예금주</dt><dd>PJG</dd></div>
+                <div><dt>계좌</dt><dd>은행명 000-000-000000</dd></div>
+              </dl>
+              <button class="command-button" type="button" data-copy-account="은행명 000-000-000000 (PJG)" aria-describedby="copy-status-bride"><span aria-hidden="true">⧉</span> Copy account</button>
+              <p id="copy-status-bride" class="copy-status" aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <footer><p>THANK YOU FOR BEING PART OF OUR STORY.</p><p>JANG BYEONGHUI &amp; PJG / 2027</p></footer>

@@ -1,4 +1,4 @@
-const address = '서울특별시 서초구 헌릉로 12, 현대*기아 양재 사옥 그랜드 홀';
+const address = '서울특별시 서초구 헌릉로 12, 현대자동차기아빌딩 그랜드 홀';
 const copyButton = document.querySelector('[data-copy-address]');
 const copyStatus = document.querySelector('#copy-status');
 const buildButton = document.querySelector('[data-build-invitation]');
@@ -40,6 +40,83 @@ async function copyAddress() {
 }
 
 copyButton?.addEventListener('click', copyAddress);
+
+/** Generic clipboard-copy handler for the account-number "Copy account" buttons in CONTRIBUTING.md. */
+document.querySelectorAll('[data-copy-account]').forEach((button) => {
+  const statusEl = document.getElementById(button.getAttribute('aria-describedby'));
+  button.addEventListener('click', async () => {
+    const value = button.dataset.copyAccount;
+    try {
+      await navigator.clipboard.writeText(value);
+      if (statusEl) statusEl.textContent = '계좌번호를 클립보드에 복사했습니다.';
+      button.classList.add('copied');
+      button.innerHTML = '<span aria-hidden="true">✓</span> Copied';
+    } catch {
+      if (statusEl) statusEl.textContent = `계좌: ${value}`;
+    }
+  });
+});
+
+/** Ceremony schedule constants shared by the "Add to Google Calendar" / ".ics download" actions. */
+const EVENT_TITLE = '장병희 ♥ PJG 결혼식';
+const EVENT_LOCATION = '서울특별시 서초구 헌릉로 12, 현대자동차기아빌딩 그랜드 홀';
+const EVENT_DESCRIPTION = '장병희와 PJG의 결혼식에 초대합니다. 그랜드 홀에서 뵙겠습니다.';
+const EVENT_START_UTC = '20270627T030000Z'; // 2027-06-27 12:00 KST
+const EVENT_END_UTC = '20270627T050000Z'; // 2027-06-27 14:00 KST
+
+const googleCalendarButton = document.querySelector('[data-add-google-calendar]');
+const icsButton = document.querySelector('[data-download-ics]');
+const calendarStatus = document.querySelector('#calendar-status');
+
+googleCalendarButton?.addEventListener('click', () => {
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: EVENT_TITLE,
+    dates: `${EVENT_START_UTC}/${EVENT_END_UTC}`,
+    details: EVENT_DESCRIPTION,
+    location: EVENT_LOCATION,
+  });
+  window.open(`https://calendar.google.com/calendar/render?${params.toString()}`, '_blank', 'noopener,noreferrer');
+});
+
+/** Escapes text per RFC 5545 (commas, semicolons, and newlines must be backslash-escaped in ICS values). */
+function escapeIcsText(text) {
+  return text.replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n');
+}
+
+function formatIcsTimestamp(date) {
+  return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+}
+
+icsButton?.addEventListener('click', () => {
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//JANG-PJG-WEDDING//invitation//KO',
+    'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    'UID:jang-pjg-wedding-20270627@jangbyeonghui.github.io',
+    `DTSTAMP:${formatIcsTimestamp(new Date())}`,
+    `DTSTART:${EVENT_START_UTC}`,
+    `DTEND:${EVENT_END_UTC}`,
+    `SUMMARY:${escapeIcsText(EVENT_TITLE)}`,
+    `DESCRIPTION:${escapeIcsText(EVENT_DESCRIPTION)}`,
+    `LOCATION:${escapeIcsText(EVENT_LOCATION)}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'jang-pjg-wedding.ics';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  if (calendarStatus) calendarStatus.textContent = '캘린더 파일(.ics)을 다운로드했습니다.';
+});
 
 /** Types `text` into `element` one character at a time; instant when reduced motion is preferred. */
 function typeLine(element, text, speed = 18) {
@@ -258,8 +335,9 @@ function playTypeReveal(element) {
 if (!prefersReducedMotion) {
   const scrollGroups = [
     ['#manifest-title', '.manifest-copy > p', '.manifest-copy dl'],
-    ['#location-title', '.location-copy > p'],
-    ['#access-title', '.access-details', '.access-note'],
+    ['#location-title', '.location-copy > p', '.map-links', '.location-details', '.location-status'],
+    ['#access-title', '.access-copy dl', '.calendar-actions', '.access-note'],
+    ['#contribute-title', '.contribute-copy > p', '.contribute-accounts'],
     ['main footer p'],
   ];
   const scrollTypeEls = [];
